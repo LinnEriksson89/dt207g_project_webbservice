@@ -1,0 +1,34 @@
+{
+  "name": "dt207g_project_webbservice",
+  "version": "1.0.0",
+  "description": "Webbservice for project in DT207G.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Hello World!\"",
+    "dev": "nodemon server.js",
+    "server": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinnEriksson89/dt207g_project_webbservice.git"
+  },
+  "author": "Linn Eriksson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LinnEriksson89/dt207g_project_webbservice/issues"
+  },
+  "homepage": "https://github.com/LinnEriksson89/dt207g_project_webbservice#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.10.0",
+    "mongoose": "^8.4.4",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "router": "^1.3.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
