@@ -4,7 +4,7 @@
  */
 
 
-//Routes for authorized users, hanles login, register etc.
+//Routes for authorized users, handles login, register etc.
 //Constants and requirements.
 const express = require("express");
 const router = express.Router();
