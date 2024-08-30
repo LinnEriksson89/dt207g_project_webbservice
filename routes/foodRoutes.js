@@ -23,7 +23,6 @@ connection.connect((_req, _res, err) => {
         console.log("Connection failed.");
         return;
     }
-
     console.log("Connected to database");
 });
 
@@ -41,6 +40,7 @@ router.get("/all", (req, res) => {
             return;            
         } else if(result.length === 0) {
             res.status(404).json({message: "No items found!"});
+            return;
         } else {
             res.status(200).json(result);
         }
@@ -78,6 +78,7 @@ router.get("/cat/:id", (req, res) => {
             return;            
         } else if(result.length === 0) {
             res.status(404).json({message: `No items found in category with id ${id}.`});
+            return;
         } else {
             res.status(200).json(result);
         }
@@ -242,7 +243,7 @@ router.post("/add/", (req, res) => {
 
 //Update menuitem per id.
 router.put("/update/:id", (req, res) => {
-        //Variables from body.
+        //Variables from body and URL.
         const item_id = req.params.id;
         const category_id = req.body.category_id;
         const name = req.body.name;

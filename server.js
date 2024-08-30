@@ -11,6 +11,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const authRoutes = require("./routes/authRoutes");
 const foodRoutes = require("./routes/foodRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 //Use JSON in API-calls.
 app.use(express.json());
@@ -29,7 +30,7 @@ app.use(express.urlencoded({
 //Routes.
 app.use("/api/accounts/", authRoutes);
 app.use("/api/food/", foodRoutes);
-//app.use("/api/foodcat/", categoryRoutes);
+app.use("/api/category/", categoryRoutes);
 
 app.listen(port, () => {
     console.log("Server running on port: " + port);
