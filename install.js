@@ -32,11 +32,11 @@ connection.promise().query(`CREATE TABLE menu_item (
     item_id INT(11) NOT NULL AUTO_INCREMENT,
     category_id INT(11) NOT NULL,
     name VARCHAR(32) NOT NULL,
-    price DOUBLE(4,2) NOT NULL,
+    price DOUBLE(5,2) NOT NULL,
     description VARCHAR(128),
     allergens VARCHAR(256),
     lunchday INT(1) NOT NULL,
-    lunchprio INT(1) NOT NULL DEFAULT '1',
+    lunchprio INT(1) NOT NULL,
     PRIMARY KEY (item_id),
     FOREIGN KEY (category_id) REFERENCES menu_category(category_id)
     );`

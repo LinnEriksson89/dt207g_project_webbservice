@@ -10,7 +10,7 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 const authRoutes = require("./routes/authRoutes");
-//const foodRoutes = require(".routes/foodRoutes");
+const foodRoutes = require("./routes/foodRoutes");
 
 //Use JSON in API-calls.
 app.use(express.json());
@@ -28,8 +28,8 @@ app.use(express.urlencoded({
 
 //Routes.
 app.use("/api/accounts/", authRoutes);
-//app.use("/api/food/", foodRoutes)
-
+app.use("/api/food/", foodRoutes);
+//app.use("/api/foodcat/", categoryRoutes);
 
 app.listen(port, () => {
     console.log("Server running on port: " + port);
