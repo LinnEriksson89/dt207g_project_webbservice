@@ -3,6 +3,8 @@
  * Linn Eriksson, VT24
  */
 
+"use strict";
+
 //Handles all the API-stuff for food-data.
 //Variables and dependencies.
 const express = require("express");
@@ -28,11 +30,12 @@ connection.connect((_req, _res, err) => {
 
 //Food-class
 const Food = require("../classes/Food");
+const food = new Food(0, "", 0, "", "");
 
 //All routes.
 //Get all menu items.
 router.get("/all", (req, res) => {
-    connection.query(`SELECT item_id, category_id, name, price, description, allergens, lunchday, lunchprio FROM menu_item;`, (err, result) => {
+    connection.query(`SELECT item_id, category_id, name, price, description, allergens FROM menu_item;`, (err, result) => {
         
         //if-else to handle errors and result.
         if(err) {
@@ -59,7 +62,10 @@ router.get("/week/:id", (req, res) => {
             res.status(500).json({error: "Something went wrong!"});
             return;
         } else if(result.length === 0) {
-            res.status(404).json({message: "test"})
+            let currentWeekId = food.calculateWeekID();
+            food.calculateWeeklyMenu(currentWeekId);
+            res.status(404).json({message: "No menu existed for that, menu was created for the current week if it didn't exist."});
+            return;
         } else {
             res.status(200).json(result);
         }
@@ -71,7 +77,7 @@ router.get("/cat/:id", (req, res) => {
     let id = req.params.id;
 
     //Get menu-items with category_id=id.
-    connection.query(`SELECT item_id, name, price, description, allergens, lunchday, lunchprio FROM menu_item WHERE category_id=?;`, id, (err, result) => {
+    connection.query(`SELECT item_id, name, price, description, allergens FROM menu_item WHERE category_id=?;`, id, (err, result) => {
         //if-else to handle errors and result.
         if(err) {
             res.status(500).json({error: "Something went wrong!"});
@@ -89,7 +95,7 @@ router.get("/cat/:id", (req, res) => {
 router.get("/:id", (req, res) => {
     let id = req.params.id;
 
-    connection.query(`SELECT category_id, name, price, description, allergens, lunchday, lunchprio FROM menu_item WHERE item_id=?;`, id,  (err, result) => {
+    connection.query(`SELECT category_id, name, price, description, allergens FROM menu_item WHERE item_id=?;`, id,  (err, result) => {
         
         //if-else to handle errors and result.
         if(err) {
@@ -97,6 +103,7 @@ router.get("/:id", (req, res) => {
             return;            
         } else if(result.length === 0) {
             res.status(404).json({message: `No items with item_id:${id} found.`});
+            return;
         } else {
             res.status(200).json(result);
         }
@@ -111,8 +118,6 @@ router.post("/add/", (req, res) => {
     const price = req.body.price;
     const description = req.body.description;
     const allergens = req.body.allergens;
-    const lunchday = req.body.lunchday;
-    const lunchprio = req.body.lunchprio;
 
     let error = {
         message: "",
@@ -121,11 +126,11 @@ router.post("/add/", (req, res) => {
     };
 
     //If any of the "not null"-fields are empty.
-    if(!category_id || !name || !price || !lunchday || !lunchprio) {
+    if(!category_id || !name || !price) {
         
         //Error messages and response code.
         error.message = "Information not included in request!";
-        error.details = "Adding a menu item requires category id, name, price, lunchday and lunchprio. One or more of these are missing.";
+        error.details = "Adding a menu item requires category id, name, and price. One or more of these are missing.";
         error.https_response.message = "Bad request";
         error.https_response.code = 400;
 
@@ -191,32 +196,9 @@ router.post("/add/", (req, res) => {
         //Send error message and return.
         res.status(400).json(error);
         return;
-    } else if(lunchday < 0 || lunchday > 8) {
-        //Check that lunchday is number 0-7.
-
-        //Error message and response code for incorrect lunchday.
-        error.message = "Incorrect information!";
-        error.details = "Lunchday should be a number between 0-7, as to specify a weekday or wildcard.";
-        error.https_response.message = "Bad request!";
-        error.https_response.code = 400;
-
-        //Send error message and return.
-        res.status(400).json(error);
-        return;
-    } else if(lunchprio < 1 || lunchprio > 3) {
-        //Check that lunchprio is 1, 2 or 3.
-        //Error message and response code for incorrect lunchprio.
-        error.message = "Incorrect information!";
-        error.details = "Lunchprio is definied by the numbers 1, 2 and 3. Nothing else is allowed.";
-        error.https_response.message = "Bad request!";
-        error.https_response.code = 400;
-
-        //Send error message and return.
-        res.status(400).json(error);
-        return;
     } else {
         //If all data seem correct, create object.
-        connection.query(`INSERT INTO menu_item VALUES (?, ?, ?, ?, ?, ?, ?, ?);`, [null, category_id, name, price, description, allergens, lunchday, lunchprio], (err, result) => {
+        connection.query(`INSERT INTO menu_item VALUES (?, ?, ?, ?, ?, ?);`, [null, category_id, name, price, description, allergens], (err, result) => {
             //Error-handling.
             if(err) {
                 //Send error message and return.
@@ -229,9 +211,7 @@ router.post("/add/", (req, res) => {
                     name: name,
                     price: price,
                     description: description,
-                    allergens: allergens,
-                    lunchday: lunchday,
-                    lunchprio: lunchprio
+                    allergens: allergens
                 }
 
                 //Show message on completion:
@@ -250,8 +230,6 @@ router.put("/update/:id", (req, res) => {
         const price = req.body.price;
         const description = req.body.description;
         const allergens = req.body.allergens;
-        const lunchday = req.body.lunchday;
-        const lunchprio = req.body.lunchprio;
     
         let error = {
             message: "",
@@ -260,11 +238,11 @@ router.put("/update/:id", (req, res) => {
         };
     
         //If any of the "not null"-fields are empty.
-        if(!item_id || !category_id || !name || !price || !lunchday || !lunchprio) {
+        if(!item_id || !category_id || !name || !price) {
             
             //Error messages and response code for empty not null-fields.
             error.message = "Information not included in request!";
-            error.details = "Updating a menu item requires item id, category id, name, price, lunchday and lunchprio. One or more of these are missing.";
+            error.details = "Updating a menu item requires item id, category id, name and price. One or more of these are missing.";
             error.https_response.message = "Bad request";
             error.https_response.code = 400;
     
@@ -293,6 +271,7 @@ router.put("/update/:id", (req, res) => {
     
             //Send error message and return.
             res.status(400).json(error);
+            return;
         } else if(name.length < 4 || name.length > 32) {
             //Check that name is 4-32 chars.
             //Error message and response code for too long or short name.
@@ -340,32 +319,9 @@ router.put("/update/:id", (req, res) => {
             //Send error message and return.
             res.status(400).json(error);
             return;
-        } else if(lunchday < 0 || lunchday > 8) {
-            //Check that lunchday is number 0-7.
-    
-            //Error message and response code for incorrect lunchday.
-            error.message = "Incorrect information!";
-            error.details = "Lunchday should be a number between 0-7, as to specify a weekday or wildcard.";
-            error.https_response.message = "Bad request!";
-            error.https_response.code = 400;
-    
-            //Send error message and return.
-            res.status(400).json(error);
-            return;
-        } else if(lunchprio < 1 || lunchprio > 3) {
-            //Check that lunchprio is 1, 2 or 3.
-            //Error message and response code for incorrect lunchprio.
-            error.message = "Incorrect information!";
-            error.details = "Lunchprio is definied by the numbers 1, 2 and 3. Nothing else is allowed.";
-            error.https_response.message = "Bad request!";
-            error.https_response.code = 400;
-    
-            //Send error message and return.
-            res.status(400).json(error);
-            return;
         } else {
             //If all data seem correct, create object.
-            connection.query(`UPDATE menu_item SET category_id = ?, name = ?, price = ?, description = ?, allergens = ?, lunchday = ?, lunchprio = ? WHERE item_id = ?;`, [category_id, name, price, description, allergens, lunchday, lunchprio, item_id], (err, result) => {
+            connection.query(`UPDATE menu_item SET category_id = ?, name = ?, price = ?, description = ?, allergens = ? WHERE item_id = ?;`, [category_id, name, price, description, allergens, item_id], (err, result) => {
                 //Error-handling.
                 if(err) {
                     //Send error message and return.
@@ -379,9 +335,7 @@ router.put("/update/:id", (req, res) => {
                         name: name,
                         price: price,
                         description: description,
-                        allergens: allergens,
-                        lunchday: lunchday,
-                        lunchprio: lunchprio
+                        allergens: allergens
                     }
     
                     //Show message on completion:
@@ -405,11 +359,6 @@ router.delete("/delete/:id", (req, res) => {
             res.status(200).json({message: `Menu-item with id ${id} deleted.`});
         }
     });
-});
-
-//Route not found.
-router.all("*", (req, res) => {
-    res.status(404).json({message: "Route not found"});
 });
 
 //Export

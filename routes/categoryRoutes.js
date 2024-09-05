@@ -3,6 +3,8 @@
  * Linn Eriksson, VT24
  */
 
+"use strict";
+
 //CRUD for food-categories, mainly for admin purposes.
 //Variables and dependencies. 
 const express = require("express");
@@ -32,7 +34,7 @@ router.get("/all", (req, res) => {
     connection.query(`SELECT category_id, name, description FROM menu_category;`, (err, result) => {
         //If-else to handle errors.
         if(err) {
-            res.status(500).json({error: "Something went wrong."});
+            res.status(500).json({error: "Something went wrong.", err});
             return;
         } else if(result.length === 0){
             res.status(404).json({message: "No categories found."});
@@ -213,11 +215,6 @@ router.delete("/delete/:id", (req, res) => {
             res.status(200).json({message: `Category with id ${id} deleted.`});
         }
     });
-});
-
-//Route not found.
-router.all("*", (req, res) => {
-    res.status(404).json({message: "Route not found."});
 });
 
 //Export

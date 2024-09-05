@@ -87,14 +87,16 @@ class Food {
             console.log("Connected to database");
         });
 
-        //Start by checking if a menu already exists and the user just messed up the id.
+
+        //Start by checking if a menu already exists for the current week and the user just messed up the id.
         connection.query(`SELECT menu_list FROM week_menu WHERE week_id=?;`, weekID, (err, result) => {
             if(err) {    
                 //Send error message and return.
                 return err;
             } else if (result) {
-                //Return correct menu anyway.
-                return result;
+                //If a result exists for the current week the message should reflect that.
+                let message = `A menu for id: ${weekID} already exists, did you give the correct id?`;
+                return message;
             }
             //If none of the above is true the code continues and calculates the menu.
         });

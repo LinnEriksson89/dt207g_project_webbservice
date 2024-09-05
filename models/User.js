@@ -3,6 +3,8 @@
  * Linn Eriksson, VT24
  */
 
+"use strict";
+
 //Constants and requirements.
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");

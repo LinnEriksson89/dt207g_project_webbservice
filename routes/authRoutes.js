@@ -3,6 +3,7 @@
  * Linn Eriksson, VT24
  */
 
+"use strict";
 
 //Routes for authorized users, handles login, register etc.
 //Constants and requirements.
@@ -299,11 +300,6 @@ function authenticateToken(req, res, next) {
         })
     }
 };
-
-//Route not found.
-router.all("*", (req, res) => {
-    res.status(404).json({message: "Route not found"});
-});
 
 //Export
 module.exports = router;
