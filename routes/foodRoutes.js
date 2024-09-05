@@ -25,7 +25,7 @@ connection.connect((_req, _res, err) => {
         console.log("Connection failed.");
         return;
     }
-    console.log("Connected to database");
+    console.log("Connected to database in foodRoutes.");
 });
 
 //Food-class
@@ -95,14 +95,14 @@ router.get("/cat/:id", (req, res) => {
 router.get("/:id", (req, res) => {
     let id = req.params.id;
 
-    connection.query(`SELECT category_id, name, price, description, allergens FROM menu_item WHERE item_id=?;`, id,  (err, result) => {
+    connection.query(`SELECT item_id, category_id, name, price, description, allergens FROM menu_item WHERE item_id=?;`, id,  (err, result) => {
         
         //if-else to handle errors and result.
         if(err) {
             res.status(500).json({error: "Something went wrong!"});
             return;            
         } else if(result.length === 0) {
-            res.status(404).json({message: `No items with item_id:${id} found.`});
+            res.status(404).json({message: `No item with item_id:${id} found.`});
             return;
         } else {
             res.status(200).json(result);

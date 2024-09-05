@@ -15,7 +15,7 @@ const jwt = require("jsonwebtoken");
 //Connect to user-database.
 mongoose.connect(process.env.USER_DBLINK)
     .then(() => {
-        console.log("Connected to mongoDB");
+        console.log("Connected to mongoDB in authRoutes.");
     }).catch((err) =>{
         console.log("Error connecting to database: " + err);
     });

@@ -25,7 +25,7 @@ connection.connect((_req, _res, err) => {
         console.log("Connection failed.");
         return;
     }
-    console.log("Connected to database");
+    console.log("Connected to database in categoryRoutes.");
 });
 
 //All routes.
