@@ -3,3 +3,4 @@ node_modules/
 
 #Ignoring files
 .env
+test.js
