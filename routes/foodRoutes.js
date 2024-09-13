@@ -77,7 +77,7 @@ router.get("/cat/:id", (req, res) => {
     let id = req.params.id;
 
     //Get menu-items with category_id=id.
-    connection.query(`SELECT item_id, name, price, description, allergens FROM menu_item WHERE category_id=?;`, id, (err, result) => {
+    connection.query(`SELECT category_id, item_id, name, price, description, allergens FROM menu_item WHERE category_id=?;`, id, (err, result) => {
         //if-else to handle errors and result.
         if(err) {
             res.status(500).json({error: "Something went wrong!"});

@@ -219,8 +219,60 @@ router.get("/protected", authenticateToken, async (req, res) => {
 
     //Try-catch to fetch protected pages.
     try {
-        //Fetch information (currently just a string of example function).
-        let result = "await Data.find({})";
+        //Fetch information.
+        let result = {
+            food: "http://127.0.0.1:4000/api/food",
+            lunch: "http://127.0.0.1:4000/api/lunch",
+            categories: "http://127.0.0.1:4000/api/category",
+            weekdays: [
+                {
+                    pos: 0,
+                    name: "Valfri dag"
+                },
+                {
+                    pos: 1,
+                    name: "Måndag"
+                },
+                {
+                    pos: 2,
+                    name: "Tisdag"
+                },
+                {
+                    pos: 3,
+                    name: "Onsdag"
+                },
+                {
+                    pos: 4,
+                    name: "Torsdag"
+                },
+                {
+                    pos: 5,
+                    name: "Fredag"
+                },
+                {
+                    pos: 6,
+                    name: "Lördag"
+                },
+                {
+                    pos: 7,
+                    name: "Söndag"
+                }
+            ],
+            prio: [
+                {
+                    pos: 1,
+                    name: "Hög"
+                },
+                {
+                    pos: 2,
+                    name: "Medel"
+                },
+                {
+                    pos: 3,
+                    name: "Låg"
+                }
+            ]
+        };
 
         //if there are no results, show 404.
         if(result.length === 0) {

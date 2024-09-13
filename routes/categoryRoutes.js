@@ -65,7 +65,7 @@ router.get("/:id", (req, res) => {
 });
 
 //Create category
-router.post("/", (req, res) => {
+router.post("/add/", (req, res) => {
     //Variables from body.
     const name = req.body.name;
     const description = req.body.description;
@@ -76,10 +76,10 @@ router.post("/", (req, res) => {
         https_response: {}
     };
 
-    if(!name || !description) {
+    if(!name) {
         //Error messages and response code.
         error.message = "Information not included in request!";
-        error.details = "Adding a category requires name and description, one or both is missing.";
+        error.details = "Adding a category requires name, name is missing.";
         error.https_response.message = "Bad request";
         error.https_response.code = 400;
 
@@ -127,7 +127,7 @@ router.post("/", (req, res) => {
 });
 
 //Update category per id.
-router.put("/:id", (req, res) => {
+router.put("/update/:id", (req, res) => {
         //Variables from body and URL.
         const category_id = req.params.id;
         const name = req.body.name;
